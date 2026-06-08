@@ -1,0 +1,29 @@
+name: Daily Paraguay Weather Agent
+
+on:
+  schedule:
+    - cron: '10 0 * * *'  # Runs at 08:10 AM Paraguay Time (00:10 UTC)
+  workflow_dispatch:        # ← add this line, same indent as schedule
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run weather agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SENDER_EMAIL:      ${{ secrets.SENDER_EMAIL }}
+          SENDER_PASSWORD:   ${{ secrets.SENDER_PASSWORD }}
+          RECEIVER_EMAILS:   ${{ secrets.RECEIVER_EMAILS }}
+        run: python weather_agent.py
